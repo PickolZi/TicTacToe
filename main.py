@@ -21,7 +21,7 @@ char_positions = [
 ]
 
 # Given the position of x and y, we will alter the text on the GUI
-char_count = 0
+char = "O"
 def mark_button(x, y):
     if winner:
         return
@@ -30,13 +30,12 @@ def mark_button(x, y):
     if button_positions[x][y]['text'] != "":
         return
 
-    global char_count
+    global char
     # Alternate the char value between X and O
-    if char_count % 2 == 0:
+    if char == "X":
         char = "O"
     else:
         char = "X"
-    char_count += 1
 
     # Sets the character onto the game board and digital variable board.
     button_positions[x][y]['text'] = char
@@ -45,10 +44,7 @@ def mark_button(x, y):
     check_winner(char)
 
     # Changes the display at the top of the screen to present who's turn it is.
-    if char == "O":
-        display_char_turn("X")
-    elif char == "X":
-        display_char_turn("O")
+    display_char_turn(char)
 
 
 def check_winner(char):
@@ -69,17 +65,36 @@ def check_winner(char):
     if char_positions[0][2] == char and char_positions[1][1] == char and char_positions[2][0] == char:
         declare_winner(char)
 
+    if not winner:
+        # Check if there's a tie
+        count = 0
+        for row in char_positions:
+            for char in row:
+                if char != "":
+                    count += 1
+        if count == 9:
+            player_turn_label['text'] = "There is a tie!"
+
 
 def display_char_turn(char):
     if winner:
         return
 
+    # Swap characters
+    if char == "O":
+        char = "X"
+    else:
+        char = "O"
+
     player_turn_label['text'] = f"It is now {char}'s turn"
 
 
 def reset_board():
-    global winner
+    global winner, char
     winner = False
+
+    # Resets the label
+    display_char_turn(char)
 
     # Resets all the button object's text to ""
     for row in button_positions:
@@ -107,7 +122,7 @@ window.resizable(False, False)
 winner = False
 
 # Adding a label for displaying who's turn it is
-player_turn_label = Label(window, text="It is now O's turn", anchor=CENTER, font=("Verdana", 16))
+player_turn_label = Label(window, text="It is now X's turn", anchor=CENTER, font=("Verdana", 16))
 player_turn_label.grid(columnspan=3, pady=10)
 
 # Creating the tic-tac-toe board
